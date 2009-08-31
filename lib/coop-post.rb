@@ -22,8 +22,8 @@ module Coop
   end
 end
 
-cred_info = if File.exist?('creds.yml')
-  YAML.load(File.read('creds.yml'))
+cred_info = if File.exist?('coop-creds.yml')
+  YAML.load(File.read('coop-creds.yml'))
 else
   {}
 end
