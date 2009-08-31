@@ -24,6 +24,7 @@ end
 post '/coop-hook' do
   push = JSON.parse(params[:payload])
   push['commits'].each do |commit|
-    Coop::Status.from_commit_info(group_id, commit).save
+    Coop::Status.from_github_commit_info(group_id, commit).save
   end
+  "Thanks for playing"
 end

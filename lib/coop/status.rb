@@ -9,8 +9,8 @@ module Coop
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<status>#{attributes['text']}</status>\n"
     end
 
-    def self.from_commit_info(group_id, commit)
-      status_text = "#{commit['author']['name']}@#{commit['url']} : #{commit['message']}"
+    def self.from_github_commit_info(group_id, commit)
+      status_text = "#{commit['author']['name']}@#{commit['url']} : #{commit['message'].split("\n")[0]}"
       new(:group_id => group_id, :text => status_text)
     end
   end
