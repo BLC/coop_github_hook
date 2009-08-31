@@ -17,9 +17,13 @@ Coop::Status.password = cred_info['password'] || ask("Enter your password:  ") {
 
 group_id = cred_info['group_id'] || ask("Enter the group id to update:  ") { |q| q.echo = true }
 
+get '/coop-hook/version' do
+  @revision ||= File.exist?('REVISION') ? File.read('REVISION') : 'unknown'
+end
+
 post '/coop-hook' do
   push = JSON.parse(params[:payload])
   push['commits'].each do |commit|
-    CoopStatus.from_commit_info(authentication_string, group_id, commit).post
+    Coop::Status.from_commit_info(group_id, commit).save
   end
 end

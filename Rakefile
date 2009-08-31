@@ -3,9 +3,14 @@ task :deploy do
   require 'yaml'
 
   deploy_options = YAML.load(File.read('config/deploy.yml'))
-  deploy_to = "#{deploy_options['server']}:#{deploy_options['folder']}"
+  server = deploy_options['server']
+  folder = deploy_options['folder']
+  deploy_to = "#{server}:#{folder}"
   puts "Deploying to #{deploy_to}"
   system("scp -r * #{deploy_to}")
+
+  revision = %x(git show --pretty=format:%H | head -n 1).chomp
+  system("ssh #{server} \"echo #{revision} > #{folder}/REVISION\"")
 end
 
 task :test do
