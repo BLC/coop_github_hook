@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+
+require 'highline/import'
+require 'json'
+require 'sinatra'
+require 'yaml'
+
+$: << File.dirname(__FILE__) + '/../lib'
+
+require 'coop/status'
+##########################
+# configure credentials
+coop_info = if File.exist?('config/coop-creds.yml')
+  YAML.load(File.read('config/coop-creds.yml'))
+else
+  {}
+end
+
+username = coop_info['username'] || ask("Enter your username:  ") { |q| q.echo = true }
+password = coop_info['password'] || ask("Enter your password:  ") { |q| q.echo = "*" }
+
+[Coop::Status].each do |clazz|
+  clazz.user = username
+  clazz.password = password
+end
+
+group_id = coop_info['group_id'] || ask("Enter the group id to notify:  ") { |q| q.echo = true }
+
+##########################
+# actual hooks
+get '/hooks/version' do
+  @revision ||= File.exist?('REVISION') ? File.read('REVISION') : 'unknown'
+end
+
+post '/hooks/coop' do
+  push = JSON.parse(params[:payload])
+  push['commits'].each do |commit|
+    Coop::Status.from_github_commit_info(group_id, commit).save
+  end
+  "Thanks for playing"
+end

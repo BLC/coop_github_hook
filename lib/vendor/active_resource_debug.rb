@@ -1,13 +1,12 @@
+# little class that turns on http request logging
+# just require 'lib/vendor/active_resource_debug' to activate this
 class ActiveResource::Connection
-  # Creates new Net::HTTP instance for communication with
-  # remote service and resources.
-  def http
-    http = Net::HTTP.new(@site.host, @site.port)
-    http.use_ssl = @site.is_a?(URI::HTTPS)
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl
-    http.read_timeout = @timeout if @timeout
-    #Here's the addition that allows you to see the output
+  def http_with_debug(*args)
+    http = http_without_debug(*args)
     http.set_debug_output $stderr
-    return http
+    http
   end
+
+  alias :http_without_debug :http
+  alias :http :http_with_debug
 end
