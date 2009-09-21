@@ -34,6 +34,22 @@ Example config/deploy.yml:
       server: externally_accessible_server
       folder: /home/github/github-post-commits
 
+## Monit
+If you want to monitor your hook server with monit you can use the provided script/monit-wrapper.sh script. This script takes either start or stop, and will run script/coop-post after generating a pid file so that monit can try and stop it if necessary, and monitor if it's running.
+
+This script requires a port to be specified in config/port.
+
+Example config/port file:
+    12345
+
+Example monit config
+
+    check process coop-post with pidfile /home/github/github-post-commits/tmp/coop-post.pid
+       start program = "su - github_hook_user -c '/home/github/github-post-commits start'"
+       stop program = "su - github_hook_user -c '/home/github/github-post-commits stop'"
+
+Then run `sudo monit coop-post start` to start the server and nd check on it with `sudo monit status`
+
 ## References
 * [github post-receive hooks](http://github.com/guides/post-receive-hooks) 
 * [coop api](http://coopapp.com/api)
