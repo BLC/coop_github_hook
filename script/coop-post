@@ -36,7 +36,7 @@ end
 post '/hooks/coop' do
   push = JSON.parse(params[:payload])
   push['commits'].each do |commit|
-    Coop::Status.from_github_commit_info(group_id, commit).save
+    Coop::Status.new(:group_id => group_id, :github_commit => commit).save
   end
   "Thanks for playing"
 end
